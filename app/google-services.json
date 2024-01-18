@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "76700088227",
+    "project_id": "engines-1ad8b",
+    "storage_bucket": "engines-1ad8b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:76700088227:android:83934df48a2609c0294c16",
+        "android_client_info": {
+          "package_name": "ru.kraz.engines"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBo6O7nFnuZACSseMvK5RNBcsxNZA5kQ-M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
