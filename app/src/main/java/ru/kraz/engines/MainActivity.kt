@@ -1,6 +1,7 @@
 package ru.kraz.engines
 
 import android.content.Context
+import android.media.MediaPlayer
 import android.net.ConnectivityManager
 import android.net.ConnectivityManager.NetworkCallback
 import android.net.Network
@@ -42,6 +43,8 @@ class MainActivity : AppCompatActivity() {
     }
     private var internetConnection = false
 
+    private var musicPlayer: MediaPlayer? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
@@ -66,6 +69,24 @@ class MainActivity : AppCompatActivity() {
             viewModel.like(position)
         }, expand = { position ->
             viewModel.expand(position)
+        }, soundAction = { position, engine ->
+            viewModel.sound(position)
+            if (engine.soundPlaying) {
+                musicPlayer?.stop()
+                musicPlayer?.release()
+            }
+            else {
+                musicPlayer = MediaPlayer()
+                musicPlayer?.setDataSource(engine.sound)
+                musicPlayer?.prepareAsync()
+                musicPlayer?.setOnPreparedListener {
+                    musicPlayer?.start()
+                }
+                musicPlayer?.setOnCompletionListener {
+                    musicPlayer?.release()
+                    viewModel.sound(position)
+                }
+            }
         })
 
         binding.engines.adapter = adapter
@@ -87,6 +108,13 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         viewModel.fetchEngines()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        musicPlayer?.stop()
+        musicPlayer?.release()
+        viewModel.sound()
     }
 
     override fun onStop() {

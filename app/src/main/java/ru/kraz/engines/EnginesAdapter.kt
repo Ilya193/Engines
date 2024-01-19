@@ -9,27 +9,31 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
-import coil.load
 import ru.kraz.engines.databinding.ItemEngineBinding
 
 class EnginesAdapter(
     private val imageLoader: ImageLoader,
     private val like: (Int) -> Unit,
     private val expand: (Int) -> Unit,
+    private val soundAction: (Int, Engine) -> Unit,
 ) : ListAdapter<Engine, EnginesAdapter.ViewHolder>(Diff()) {
 
     inner class ViewHolder(private val view: ItemEngineBinding) :
         RecyclerView.ViewHolder(view.root) {
 
+        private val adapter = ImageAdapter(imageLoader = imageLoader)
+
+        init {
+            view.viewPager.adapter = adapter
+        }
+
         fun bind(item: Engine) {
-            view.imgEngine.load(item.photo, imageLoader) {
-                listener(onSuccess = { _, _ ->
-                    view.tvName.text = item.name
-                    view.imgLike.setImageResource(R.drawable.ic_favorite_border)
-                    bindLikes(item)
-                })
-            }
+            adapter.submitList(item.images)
+            view.tvName.text = item.name
+            view.imgLike.setImageResource(R.drawable.ic_favorite_border)
+            bindLikes(item)
             bindDescription(item)
+            bindSoundAction(item)
         }
 
         fun bindLikes(item: Engine) {
@@ -44,6 +48,10 @@ class EnginesAdapter(
                 .start()
             view.tvDescription.text = item.description
         }
+
+        fun bindSoundAction(item: Engine) {
+            view.soundAction.setImageResource(if (item.soundPlaying) R.drawable.pause else R.drawable.play)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -54,6 +62,9 @@ class EnginesAdapter(
             }
             view.tvDescription.setOnClickListener {
                 expand(adapterPosition)
+            }
+            view.soundAction.setOnClickListener {
+                soundAction(adapterPosition, getItem(adapterPosition))
             }
         }
     }
@@ -68,13 +79,14 @@ class EnginesAdapter(
             val bundle = payloads[0] as Bundle
             when (bundle.getString(Diff.ACTION) ?: "") {
                 Diff.ACTION_LIKE -> holder.bindLikes(getItem(position))
+                Diff.ACTION_SOUND -> holder.bindSoundAction(getItem(position))
                 Diff.ACTION_TEXT_EXPANDED -> holder.bindDescription(getItem(position))
             }
         }
     }
 
     companion object {
-        const val MAX_LINES = 25
+        const val MAX_LINES = 100
         const val MIN_LINES = 2
     }
 }
@@ -87,16 +99,24 @@ class Diff : DiffUtil.ItemCallback<Engine>() {
         oldItem == newItem
 
     override fun getChangePayload(oldItem: Engine, newItem: Engine): Any? {
-        return if (oldItem.likeIt != newItem.likeIt || oldItem.countLike != newItem.countLike) bundleOf().apply {
-            putString(ACTION, ACTION_LIKE)
-        } else bundleOf().apply {
-            putString(ACTION, ACTION_TEXT_EXPANDED)
-        }
+        return if (oldItem.likeIt != newItem.likeIt || oldItem.countLike != newItem.countLike)
+            bundleOf().apply {
+                putString(ACTION, ACTION_LIKE)
+            }
+        else if (oldItem.soundPlaying != newItem.soundPlaying)
+            bundleOf().apply {
+                putString(ACTION, ACTION_SOUND)
+            }
+        else
+            bundleOf().apply {
+                putString(ACTION, ACTION_TEXT_EXPANDED)
+            }
     }
 
     companion object {
         const val ACTION = "ACTION"
         const val ACTION_LIKE = "ACTION_LIKE"
+        const val ACTION_SOUND = "ACTION_SOUND"
         const val ACTION_TEXT_EXPANDED = "ACTION_TEXT_EXPANDED"
     }
 }
