@@ -72,10 +72,10 @@ class MainActivity : AppCompatActivity() {
         }, soundAction = { position, engine ->
             viewModel.sound(position)
             if (engine.soundPlaying) {
-                musicPlayer?.stop()
-                musicPlayer?.release()
-            }
-            else {
+                stopSound()
+            } else {
+                if (musicPlayer != null)
+                    stopSound()
                 musicPlayer = MediaPlayer()
                 musicPlayer?.setDataSource(engine.sound)
                 musicPlayer?.prepareAsync()
@@ -83,8 +83,8 @@ class MainActivity : AppCompatActivity() {
                     musicPlayer?.start()
                 }
                 musicPlayer?.setOnCompletionListener {
-                    musicPlayer?.release()
-                    viewModel.sound(position)
+                    stopSound()
+                    viewModel.sound()
                 }
             }
         })
@@ -95,6 +95,11 @@ class MainActivity : AppCompatActivity() {
         viewModel.uiState.observe(this) {
             adapter.submitList(it)
         }
+    }
+
+    private fun stopSound() {
+        musicPlayer?.release()
+        musicPlayer = null
     }
 
     override fun onStart() {
@@ -112,8 +117,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        musicPlayer?.stop()
-        musicPlayer?.release()
+        stopSound()
         viewModel.sound()
     }
 

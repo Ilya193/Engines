@@ -9,16 +9,23 @@ import ru.kraz.engines.databinding.ItemImageBinding
 
 class ImageAdapter(
     private var images: List<String> = mutableListOf(),
-    private val imageLoader: ImageLoader
+    private val imageLoader: ImageLoader,
 ) : RecyclerView.Adapter<ImageAdapter.ViewHolder>() {
-    inner class ViewHolder(private val view: ItemImageBinding) : RecyclerView.ViewHolder(view.root) {
+    inner class ViewHolder(private val view: ItemImageBinding) :
+        RecyclerView.ViewHolder(view.root) {
         fun bind(item: String) {
             view.imgEngine.load(item, imageLoader)
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(ItemImageBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        return ViewHolder(
+            ItemImageBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
     override fun getItemCount(): Int = images.size

@@ -3,10 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:expandableTextView="http://schemas.android.com/tools"
-    app:cardCornerRadius="10dp"
+    android:layout_marginBottom="8dp"
     app:cardBackgroundColor="@color/backgroundEngine"
-    android:layout_marginBottom="8dp">
+    app:cardCornerRadius="10dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -14,15 +13,15 @@
 
         <TextView
             android:id="@+id/tvDescription"
+            style="@style/TextAppearance.AppCompat.Body2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
             android:ellipsize="end"
             android:maxLines="2"
-            style="@style/TextAppearance.AppCompat.Body2"
-            app:layout_constraintTop_toTopOf="parent"
+            android:padding="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/viewPager"
@@ -48,6 +47,7 @@
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_marginStart="8dp"
+            android:src="@drawable/ic_favorite"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/viewPager" />
 
@@ -60,13 +60,13 @@
             app:layout_constraintBottom_toBottomOf="@id/imgLike"
             app:layout_constraintStart_toEndOf="@id/imgLike"
             app:layout_constraintTop_toTopOf="@id/imgLike" />
-        
+
         <ImageView
             android:id="@+id/soundAction"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            app:layout_constraintTop_toBottomOf="@id/viewPager"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/viewPager" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -56,9 +56,9 @@ class MainViewModel(
         }
 
         db.collection("items").document(engines[position].id)
-            .update("liked", engines[position].liked)
-        db.collection("items").document(engines[position].id)
             .update("countLike", FieldValue.increment(num))
+        db.collection("items").document(engines[position].id)
+            .update("liked", engines[position].liked)
     }
 
     fun expand(position: Int) {
@@ -67,7 +67,11 @@ class MainViewModel(
     }
 
     fun sound(position: Int) {
-        engines[position] = engines[position].copy(soundPlaying = !engines[position].soundPlaying)
+        for (index in 0..<engines.size) {
+            if (position == index) engines[index] =
+                engines[index].copy(soundPlaying = !engines[index].soundPlaying)
+            else engines[index] = engines[index].copy(soundPlaying = false)
+        }
         _uiState.postValue(engines.toList())
     }
 
@@ -75,6 +79,7 @@ class MainViewModel(
         for (index in 0..<engines.size) {
             engines[index] = engines[index].copy(soundPlaying = false)
         }
+        _uiState.postValue(engines.toList())
     }
 
     fun uuid(uuid: String) {

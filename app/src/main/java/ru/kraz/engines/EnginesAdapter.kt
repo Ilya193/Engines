@@ -1,6 +1,9 @@
 package ru.kraz.engines
 
+import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -22,6 +25,7 @@ class EnginesAdapter(
         RecyclerView.ViewHolder(view.root) {
 
         private val adapter = ImageAdapter(imageLoader = imageLoader)
+        private var init = 0
 
         init {
             view.viewPager.adapter = adapter
@@ -30,15 +34,54 @@ class EnginesAdapter(
         fun bind(item: Engine) {
             adapter.submitList(item.images)
             view.tvName.text = item.name
-            view.imgLike.setImageResource(R.drawable.ic_favorite_border)
             bindLikes(item)
             bindDescription(item)
             bindSoundAction(item)
         }
 
-        fun bindLikes(item: Engine) {
+        fun bindCountLike(item: Engine) {
             view.tvLike.text = item.countLike.toString()
-            view.imgLike.setImageResource(if (item.likeIt) R.drawable.ic_favorite else R.drawable.ic_favorite_border)
+        }
+
+        fun bindLikes(item: Engine) {
+            bindCountLike(item)
+            val animatorSet = AnimatorSet()
+            val scaleDown = ObjectAnimator.ofPropertyValuesHolder(
+                view.imgLike,
+                PropertyValuesHolder.ofFloat("scaleX", 0.8f),
+                PropertyValuesHolder.ofFloat("scaleY", 0.8f)
+            )
+            scaleDown.duration = 50
+
+            val scaleUp = ObjectAnimator.ofPropertyValuesHolder(
+                view.imgLike,
+                PropertyValuesHolder.ofFloat("scaleX", 1.0f),
+                PropertyValuesHolder.ofFloat("scaleY", 1.0f)
+            )
+            scaleUp.duration = 50
+
+            val colorChange: ObjectAnimator? = if (item.likeIt) {
+                ObjectAnimator.ofArgb(
+                    view.imgLike.drawable,
+                    "tint",
+                    Color.parseColor("#F6F2F2"),
+                    Color.RED
+                ).apply { duration = 50 }
+            } else {
+                if (init == 0) {
+                    init++
+                    null
+                } else ObjectAnimator.ofArgb(
+                    view.imgLike.drawable,
+                    "tint",
+                    Color.RED,
+                    Color.parseColor("#F6F2F2")
+                ).apply { duration = 50 }
+            }
+            if (colorChange != null) {
+                animatorSet.playSequentially(scaleDown, colorChange, scaleUp)
+                animatorSet.start()
+            }
         }
 
         fun bindDescription(item: Engine) {
@@ -79,6 +122,7 @@ class EnginesAdapter(
             val bundle = payloads[0] as Bundle
             when (bundle.getString(Diff.ACTION) ?: "") {
                 Diff.ACTION_LIKE -> holder.bindLikes(getItem(position))
+                Diff.ACTION_COUNT_LIKE -> holder.bindCountLike(getItem(position))
                 Diff.ACTION_SOUND -> holder.bindSoundAction(getItem(position))
                 Diff.ACTION_TEXT_EXPANDED -> holder.bindDescription(getItem(position))
             }
@@ -99,9 +143,13 @@ class Diff : DiffUtil.ItemCallback<Engine>() {
         oldItem == newItem
 
     override fun getChangePayload(oldItem: Engine, newItem: Engine): Any? {
-        return if (oldItem.likeIt != newItem.likeIt || oldItem.countLike != newItem.countLike)
+        return if (oldItem.likeIt != newItem.likeIt)
             bundleOf().apply {
                 putString(ACTION, ACTION_LIKE)
+            }
+        else if (oldItem.countLike != newItem.countLike)
+            bundleOf().apply {
+                putString(ACTION, ACTION_COUNT_LIKE)
             }
         else if (oldItem.soundPlaying != newItem.soundPlaying)
             bundleOf().apply {
@@ -116,6 +164,7 @@ class Diff : DiffUtil.ItemCallback<Engine>() {
     companion object {
         const val ACTION = "ACTION"
         const val ACTION_LIKE = "ACTION_LIKE"
+        const val ACTION_COUNT_LIKE = "ACTION_COUNT_LIKE"
         const val ACTION_SOUND = "ACTION_SOUND"
         const val ACTION_TEXT_EXPANDED = "ACTION_TEXT_EXPANDED"
     }
