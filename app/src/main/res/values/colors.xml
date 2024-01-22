@@ -5,4 +5,6 @@
     <color name="backgroundEngine">#FFFFFFFF</color>
     <color name="colorPrimary">#262729</color>
     <color name="windowBackground">#FFFFFFFF</color>
+    <color name="grey">#F6F2F2</color>
+    <color name="red">#FF0000</color>
 </resources>

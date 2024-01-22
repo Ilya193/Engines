@@ -3,10 +3,13 @@ package ru.kraz.engines
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
+import android.animation.ValueAnimator
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -32,13 +35,13 @@ class EnginesAdapter(
             view.imgLike,
             PropertyValuesHolder.ofFloat("scaleX", 0.8f),
             PropertyValuesHolder.ofFloat("scaleY", 0.8f)
-        ).apply { duration = 50 }
+        ).apply { duration = 100 }
 
         private val scaleUp = ObjectAnimator.ofPropertyValuesHolder(
             view.imgLike,
             PropertyValuesHolder.ofFloat("scaleX", 1.0f),
             PropertyValuesHolder.ofFloat("scaleY", 1.0f)
-        ).apply { duration = 50 }
+        ).apply { duration = 100 }
 
         init {
             view.imgLike.setOnClickListener {
@@ -73,22 +76,17 @@ class EnginesAdapter(
             if (state) {
                 view.imgLike.drawable.setTint(if (item.likeIt) Color.RED else Color.parseColor("#F6F2F2"))
             } else {
-                val colorChange: ObjectAnimator? = if (item.likeIt) {
-                    ObjectAnimator.ofArgb(
-                        view.imgLike.drawable,
-                        "tint",
-                        Color.parseColor("#F6F2F2"),
-                        Color.RED
-                    ).apply { duration = 50 }
-                } else {
-                    ObjectAnimator.ofArgb(
-                        view.imgLike.drawable,
-                        "tint",
-                        Color.RED,
-                        Color.parseColor("#F6F2F2")
-                    ).apply { duration = 50 }
+                val colorFrom =
+                    ContextCompat.getColor(view.root.context, if (item.likeIt) R.color.red else R.color.grey)
+                val colorTo =
+                    ContextCompat.getColor(view.root.context, if (item.likeIt) R.color.red else R.color.grey)
+
+                val colorAnimation = ValueAnimator.ofArgb(colorFrom, colorTo)
+                colorAnimation.duration = 20
+                colorAnimation.addUpdateListener { animator ->
+                    view.imgLike.setColorFilter(animator.animatedValue as Int, PorterDuff.Mode.SRC_IN)
                 }
-                animatorSet.playSequentially(scaleDown, colorChange, scaleUp)
+                animatorSet.playSequentially(scaleDown, colorAnimation, scaleUp)
                 animatorSet.start()
             }
         }

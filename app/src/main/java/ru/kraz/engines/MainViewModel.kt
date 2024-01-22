@@ -42,8 +42,6 @@ class MainViewModel(
                     if (tempEngine.soundPlaying) engines[index] =
                         engines[index].copy(soundPlaying = true)
                 }
-                engines.addAll(engines)
-                engines.addAll(engines)
                 _uiState.postValue(engines.toList())
             }
     }
@@ -92,7 +90,7 @@ class MainViewModel(
 data class Engine(
     val id: String = "",
     val description: String = "",
-    var countLike: Int = 0,
+    val countLike: Int = 0,
     val liked: MutableList<String> = mutableListOf(),
     val name: String = "",
     val images: List<String> = mutableListOf(),
