@@ -42,6 +42,8 @@ class MainViewModel(
                     if (tempEngine.soundPlaying) engines[index] =
                         engines[index].copy(soundPlaying = true)
                 }
+                engines.addAll(engines)
+                engines.addAll(engines)
                 _uiState.postValue(engines.toList())
             }
     }
@@ -56,9 +58,9 @@ class MainViewModel(
         }
 
         db.collection("items").document(engines[position].id)
-            .update("countLike", FieldValue.increment(num))
-        db.collection("items").document(engines[position].id)
             .update("liked", engines[position].liked)
+        db.collection("items").document(engines[position].id)
+            .update("countLike", FieldValue.increment(num))
     }
 
     fun expand(position: Int) {
@@ -90,7 +92,7 @@ class MainViewModel(
 data class Engine(
     val id: String = "",
     val description: String = "",
-    val countLike: Int = 0,
+    var countLike: Int = 0,
     val liked: MutableList<String> = mutableListOf(),
     val name: String = "",
     val images: List<String> = mutableListOf(),

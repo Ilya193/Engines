@@ -25,16 +25,41 @@ class EnginesAdapter(
         RecyclerView.ViewHolder(view.root) {
 
         private val adapter = ImageAdapter(imageLoader = imageLoader)
-        private var init = 0
+
+        private val animatorSet = AnimatorSet()
+
+        private val scaleDown = ObjectAnimator.ofPropertyValuesHolder(
+            view.imgLike,
+            PropertyValuesHolder.ofFloat("scaleX", 0.8f),
+            PropertyValuesHolder.ofFloat("scaleY", 0.8f)
+        ).apply { duration = 50 }
+
+        private val scaleUp = ObjectAnimator.ofPropertyValuesHolder(
+            view.imgLike,
+            PropertyValuesHolder.ofFloat("scaleX", 1.0f),
+            PropertyValuesHolder.ofFloat("scaleY", 1.0f)
+        ).apply { duration = 50 }
 
         init {
+            view.imgLike.setOnClickListener {
+                if (bindingAdapterPosition != RecyclerView.NO_POSITION)
+                    like(bindingAdapterPosition)
+            }
+            view.tvDescription.setOnClickListener {
+                if (bindingAdapterPosition != RecyclerView.NO_POSITION)
+                    expand(bindingAdapterPosition)
+            }
+            view.soundAction.setOnClickListener {
+                if (bindingAdapterPosition != RecyclerView.NO_POSITION)
+                    soundAction(bindingAdapterPosition, getItem(bindingAdapterPosition))
+            }
             view.viewPager.adapter = adapter
         }
 
         fun bind(item: Engine) {
             adapter.submitList(item.images)
             view.tvName.text = item.name
-            bindLikes(item)
+            bindLikes(item, true)
             bindDescription(item)
             bindSoundAction(item)
         }
@@ -43,42 +68,26 @@ class EnginesAdapter(
             view.tvLike.text = item.countLike.toString()
         }
 
-        fun bindLikes(item: Engine) {
+        fun bindLikes(item: Engine, state: Boolean = false) {
             bindCountLike(item)
-            val animatorSet = AnimatorSet()
-            val scaleDown = ObjectAnimator.ofPropertyValuesHolder(
-                view.imgLike,
-                PropertyValuesHolder.ofFloat("scaleX", 0.8f),
-                PropertyValuesHolder.ofFloat("scaleY", 0.8f)
-            )
-            scaleDown.duration = 50
-
-            val scaleUp = ObjectAnimator.ofPropertyValuesHolder(
-                view.imgLike,
-                PropertyValuesHolder.ofFloat("scaleX", 1.0f),
-                PropertyValuesHolder.ofFloat("scaleY", 1.0f)
-            )
-            scaleUp.duration = 50
-
-            val colorChange: ObjectAnimator? = if (item.likeIt) {
-                ObjectAnimator.ofArgb(
-                    view.imgLike.drawable,
-                    "tint",
-                    Color.parseColor("#F6F2F2"),
-                    Color.RED
-                ).apply { duration = 50 }
+            if (state) {
+                view.imgLike.drawable.setTint(if (item.likeIt) Color.RED else Color.parseColor("#F6F2F2"))
             } else {
-                if (init == 0) {
-                    init++
-                    null
-                } else ObjectAnimator.ofArgb(
-                    view.imgLike.drawable,
-                    "tint",
-                    Color.RED,
-                    Color.parseColor("#F6F2F2")
-                ).apply { duration = 50 }
-            }
-            if (colorChange != null) {
+                val colorChange: ObjectAnimator? = if (item.likeIt) {
+                    ObjectAnimator.ofArgb(
+                        view.imgLike.drawable,
+                        "tint",
+                        Color.parseColor("#F6F2F2"),
+                        Color.RED
+                    ).apply { duration = 50 }
+                } else {
+                    ObjectAnimator.ofArgb(
+                        view.imgLike.drawable,
+                        "tint",
+                        Color.RED,
+                        Color.parseColor("#F6F2F2")
+                    ).apply { duration = 50 }
+                }
                 animatorSet.playSequentially(scaleDown, colorChange, scaleUp)
                 animatorSet.start()
             }
@@ -99,17 +108,7 @@ class EnginesAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = ItemEngineBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(view).apply {
-            view.imgLike.setOnClickListener {
-                like(adapterPosition)
-            }
-            view.tvDescription.setOnClickListener {
-                expand(adapterPosition)
-            }
-            view.soundAction.setOnClickListener {
-                soundAction(adapterPosition, getItem(adapterPosition))
-            }
-        }
+        return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
