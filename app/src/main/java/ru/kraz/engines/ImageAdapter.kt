@@ -1,6 +1,7 @@
 package ru.kraz.engines
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
@@ -14,7 +15,17 @@ class ImageAdapter(
     inner class ViewHolder(private val view: ItemImageBinding) :
         RecyclerView.ViewHolder(view.root) {
         fun bind(item: String) {
-            view.imgEngine.load(item, imageLoader)
+            view.imgEngine.load(item, imageLoader) {
+                listener(onStart = {
+                    view.loading.visibility = View.VISIBLE
+                }, onSuccess = {_, _ ->
+                    view.loading.visibility = View.GONE
+                }, onError = {_, _ ->
+                    view.loading.visibility = View.GONE
+                }, onCancel = {
+                    view.loading.visibility = View.GONE
+                })
+            }
         }
     }
 
