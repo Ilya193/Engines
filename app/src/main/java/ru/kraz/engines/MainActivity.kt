@@ -69,6 +69,8 @@ class MainActivity : AppCompatActivity() {
             viewModel.like(position)
         }, expand = { position ->
             viewModel.expand(position)
+        }, chat = { id ->
+            CommentsFragment.newInstance(id).show(supportFragmentManager, null)
         }, soundAction = { position, engine ->
             viewModel.sound(position)
             if (engine.soundPlaying) {

@@ -1,6 +1,7 @@
 package ru.kraz.engines
 
 import android.app.Application
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -23,7 +24,15 @@ val module = module {
         MainViewModel(get())
     }
 
+    viewModel<CommentsViewModel> {
+        CommentsViewModel(get())
+    }
+
     single<FirebaseFirestore> {
         FirebaseFirestore.getInstance()
+    }
+
+    single<FirebaseDatabase> {
+        FirebaseDatabase.getInstance()
     }
 }

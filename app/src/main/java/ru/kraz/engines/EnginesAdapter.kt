@@ -21,6 +21,7 @@ class EnginesAdapter(
     private val imageLoader: ImageLoader,
     private val like: (Int) -> Unit,
     private val expand: (Int) -> Unit,
+    private val chat: (String) -> Unit,
     private val soundAction: (Int, Engine) -> Unit,
 ) : ListAdapter<Engine, EnginesAdapter.ViewHolder>(Diff()) {
 
@@ -52,6 +53,10 @@ class EnginesAdapter(
                 if (bindingAdapterPosition != RecyclerView.NO_POSITION)
                     expand(bindingAdapterPosition)
             }
+            view.imgChat.setOnClickListener {
+                if (bindingAdapterPosition != RecyclerView.NO_POSITION)
+                    chat(getItem(bindingAdapterPosition).id)
+            }
             view.soundAction.setOnClickListener {
                 if (bindingAdapterPosition != RecyclerView.NO_POSITION)
                     soundAction(bindingAdapterPosition, getItem(bindingAdapterPosition))
@@ -64,6 +69,7 @@ class EnginesAdapter(
             view.tvName.text = item.name
             bindLikes(item, true)
             bindDescription(item)
+            view.imgChat.setImageResource(R.drawable.chat)
             bindSoundAction(item)
         }
 

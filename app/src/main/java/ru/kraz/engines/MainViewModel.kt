@@ -10,17 +10,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainViewModel(
-    private val db: FirebaseFirestore,
+    private val firestore: FirebaseFirestore,
 ) : ViewModel() {
 
-    private var engines = mutableListOf<Engine>()
     private var uuid = ""
 
+    private var engines = mutableListOf<Engine>()
     private val _uiState = MutableLiveData<List<Engine>>()
     val uiState: LiveData<List<Engine>> get() = _uiState
 
     fun fetchEngines() = viewModelScope.launch(Dispatchers.IO) {
-        db.collection("items")
+        firestore.collection("items")
             .addSnapshotListener { snapshot, e ->
                 val list = mutableListOf<Engine>()
                 for (i in snapshot!!.documents) {
@@ -55,9 +55,9 @@ class MainViewModel(
             1L
         }
 
-        db.collection("items").document(engines[position].id)
+        firestore.collection("items").document(engines[position].id)
             .update("liked", engines[position].liked)
-        db.collection("items").document(engines[position].id)
+        firestore.collection("items").document(engines[position].id)
             .update("countLike", FieldValue.increment(num))
     }
 
@@ -86,16 +86,3 @@ class MainViewModel(
         this.uuid = uuid
     }
 }
-
-data class Engine(
-    val id: String = "",
-    val description: String = "",
-    val countLike: Int = 0,
-    val liked: MutableList<String> = mutableListOf(),
-    val name: String = "",
-    val images: List<String> = mutableListOf(),
-    val sound: String = "",
-    val likeIt: Boolean = false,
-    val expanded: Boolean = false,
-    val soundPlaying: Boolean = false,
-)
