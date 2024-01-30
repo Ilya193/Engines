@@ -9,6 +9,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -37,6 +38,7 @@ class CommentsViewModel(
     }
 
     fun fetchComments(engineId: String) = viewModelScope.launch(Dispatchers.IO) {
+        _uiState.postValue(CommentsUiState.Loading)
         database.reference.child("comments/$engineId").orderByChild("timestamp")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
