@@ -59,6 +59,7 @@ class CommentsFragment : BottomSheetDialogFragment() {
         binding.rvComments.adapter = adapter
 
         viewModel.uiState.observe(viewLifecycleOwner) {
+
             binding.informationContainer.loading.visibility = if (it is CommentsUiState.Loading) View.VISIBLE else View.GONE
             binding.informationContainer.containerError.visibility = if (it is CommentsUiState.Error) View.VISIBLE else View.GONE
             binding.sendContainer.visibility = if (it is CommentsUiState.Success || it is CommentsUiState.NotFound) View.VISIBLE else View.GONE

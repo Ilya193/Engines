@@ -6,145 +6,189 @@
     android:layout_height="match_parent"
     tools:context=".CreateEngineFragment">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/layoutTypeEngine"
+    <ScrollView
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:hintTextColor="@color/hint"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layoutTypeEngine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:hintTextColor="@color/hint"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/inputTypeEngine"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/input_type_engine" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layoutInformationEngine"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:hintTextColor="@color/hint"
+                app:layout_constraintTop_toBottomOf="@id/layoutTypeEngine">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/inputInformation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/input_information_engine"
+                    android:minHeight="100dp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/containerSoundAccompaniment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:layout_constraintTop_toBottomOf="@id/layoutInformationEngine">
+
+                <ImageView
+                    android:id="@+id/icSound"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:src="@drawable/music_note"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tvNameSound"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@id/icSound"
+                    app:layout_constraintStart_toEndOf="@id/icSound"
+                    app:layout_constraintTop_toTopOf="@id/icSound" />
+
+                <TextView
+                    android:id="@+id/deleteSound"
+                    style="@style/TextAppearance.AppCompat.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:textColor="@android:color/holo_blue_dark"
+                    android:text="@string/cancel"
+                    android:layout_marginStart="4dp"
+                    app:layout_constraintTop_toBottomOf="@id/tvNameSound"
+                    app:layout_constraintStart_toStartOf="@id/tvNameSound"/>
+
+                <Button
+                    android:id="@+id/btnSelectSound"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/retry"
+                    android:text="@string/select_sound"
+                    android:textColor="@color/white"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/deleteSound" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                app:layout_constraintTop_toBottomOf="@id/containerSoundAccompaniment" />
+
+            <TextView
+                android:id="@+id/tvInformation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/text_information"
+                android:gravity="center"
+                style="@style/TextAppearance.AppCompat.Title"
+                app:layout_constraintTop_toTopOf="@id/viewPager"
+                app:layout_constraintStart_toStartOf="@id/viewPager"
+                app:layout_constraintEnd_toEndOf="@id/viewPager"
+                app:layout_constraintBottom_toBottomOf="@id/viewPager"/>
+
+            <Button
+                android:id="@+id/btnSelectImage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/retry"
+                android:text="@string/select_image"
+                android:textColor="@color/white"
+                android:layout_marginTop="4dp"
+                android:layout_marginHorizontal="8dp"
+                app:layout_constraintTop_toBottomOf="@id/viewPager" />
+
+            <Button
+                android:id="@+id/btnMakeImage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/retry"
+                android:text="@string/take_photo"
+                android:textColor="@color/white"
+                android:layout_marginHorizontal="8dp"
+                app:layout_constraintTop_toBottomOf="@id/btnSelectImage" />
+
+            <Button
+                android:id="@+id/btnCreatePost"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/retry"
+                android:textColor="@color/white"
+                android:text="@string/create_post"
+                android:layout_marginTop="24dp"
+                android:layout_marginHorizontal="8dp"
+                app:layout_constraintTop_toBottomOf="@id/btnMakeImage" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+    <ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/containerError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/inputTypeEngine"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/input_type_engine" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/layoutInformationEngine"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:hintTextColor="@color/hint"
-        app:layout_constraintTop_toBottomOf="@id/layoutTypeEngine">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/inputInformation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/input_information_engine"
-            android:minHeight="100dp" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/containerSoundAccompaniment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:layout_constraintTop_toBottomOf="@id/layoutInformationEngine">
-
-        <ImageView
-            android:id="@+id/icSound"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:src="@drawable/music_note"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <TextView
-            android:id="@+id/tvNameSound"
+            style="@style/TextAppearance.AppCompat.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@id/icSound"
-            app:layout_constraintStart_toEndOf="@id/icSound"
-            app:layout_constraintTop_toTopOf="@id/icSound" />
-
-        <TextView
-            android:id="@+id/deleteSound"
-            style="@style/TextAppearance.AppCompat.Caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:textColor="@android:color/holo_blue_dark"
-            android:text="@string/cancel"
-            android:layout_marginStart="4dp"
-            app:layout_constraintBottom_toBottomOf="@id/icSound"
-            app:layout_constraintStart_toEndOf="@id/tvNameSound"
-            app:layout_constraintTop_toTopOf="@id/icSound" />
+            android:layout_marginBottom="4dp"
+            android:text="@string/text_retry" />
 
         <Button
-            android:id="@+id/btnSelectSound"
+            android:id="@+id/btnRetry"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/retry"
-            android:text="@string/select_sound"
-            android:textColor="@color/white"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/icSound" />
+            android:text="@string/btn_text_retry"
+            android:textColor="@color/white" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <include
-        android:id="@+id/informationContainer"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        layout="@layout/information_layout"/>
-
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager"
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
-        app:layout_constraintTop_toBottomOf="@id/containerSoundAccompaniment" />
-
-    <TextView
-        android:id="@+id/tvInformation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/text_information"
-        android:gravity="center"
-        style="@style/TextAppearance.AppCompat.Title"
-        app:layout_constraintTop_toTopOf="@id/viewPager"
-        app:layout_constraintStart_toStartOf="@id/viewPager"
-        app:layout_constraintEnd_toEndOf="@id/viewPager"
-        app:layout_constraintBottom_toBottomOf="@id/viewPager"/>
-
-    <Button
-        android:id="@+id/btnSelectImage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/retry"
-        android:text="@string/select_image"
-        android:textColor="@color/white"
-        android:layout_marginTop="4dp"
-        android:layout_marginHorizontal="8dp"
-        app:layout_constraintTop_toBottomOf="@id/viewPager" />
-
-    <Button
-        android:id="@+id/btnMakeImage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/retry"
-        android:text="@string/take_photo"
-        android:textColor="@color/white"
-        android:layout_marginHorizontal="8dp"
-        app:layout_constraintTop_toBottomOf="@id/btnSelectImage" />
-
-    <Button
-        android:id="@+id/btnCreatePost"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/retry"
-        android:textColor="@color/white"
-        android:text="@string/create_post"
-        android:layout_marginTop="24dp"
-        android:layout_marginHorizontal="8dp"
-        app:layout_constraintTop_toBottomOf="@id/btnMakeImage" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

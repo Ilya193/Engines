@@ -124,20 +124,21 @@ class CreateEngineFragment : Fragment() {
 
             if (type.isNotEmpty() && description.isNotEmpty() && uriSound != null && selectedImages.isNotEmpty()) {
                 viewModel.createPost(type, description, uriSound!!, selectedImages)
+                binding.content.visibility = View.GONE
             } else Snackbar.make(binding.root,
                 getString(R.string.all_fiels_must_be_filled), Snackbar.LENGTH_SHORT).show()
         }
 
-        binding.informationContainer.btnRetry.setOnClickListener {
-            binding.informationContainer.root.visibility = View.GONE
+        binding.btnRetry.setOnClickListener {
+            binding.containerError.visibility = View.GONE
+            binding.content.visibility = View.VISIBLE
         }
 
         binding.viewPager.adapter = adapter
 
         viewModel.uiState.observe(viewLifecycleOwner) {
-            binding.informationContainer.loading.visibility = if (it is CreatePostState.Loading) View.VISIBLE else View.GONE
-            binding.informationContainer.containerError.visibility = if (it is CreatePostState.Error) View.VISIBLE else View.GONE
-            binding.informationContainer.root.visibility = if (it !is CreatePostState.Success) View.VISIBLE else View.GONE
+            binding.loading.visibility = if (it is CreatePostState.Loading) View.VISIBLE else View.GONE
+            binding.containerError.visibility = if (it is CreatePostState.Error) View.VISIBLE else View.GONE
             if (it is CreatePostState.Success) parentFragmentManager.popBackStack()
         }
     }

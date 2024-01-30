@@ -76,14 +76,14 @@ class MainActivity : AppCompatActivity() {
             R.id.createEngine -> {
                 val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
                 if (currentFragment !is CreateEngineFragment) supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragmentContainer, CreateEngineFragment.newInstance())
-                    .addToBackStack(null)
                     .setCustomAnimations(
                         R.anim.slide_in,
                         R.anim.fade_out,
                         R.anim.fade_in,
                         R.anim.slide_out
                     )
+                    .replace(R.id.fragmentContainer, CreateEngineFragment.newInstance())
+                    .addToBackStack(null)
                     .commit()
             }
         }
