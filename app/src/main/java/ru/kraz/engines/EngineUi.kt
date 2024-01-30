@@ -1,6 +1,6 @@
 package ru.kraz.engines
 
-data class Engine(
+data class EngineUi(
     val id: String = "",
     val description: String = "",
     val countLike: Int = 0,

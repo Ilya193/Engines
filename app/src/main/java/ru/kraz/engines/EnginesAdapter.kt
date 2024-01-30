@@ -22,8 +22,8 @@ class EnginesAdapter(
     private val like: (Int) -> Unit,
     private val expand: (Int) -> Unit,
     private val chat: (String) -> Unit,
-    private val soundAction: (Int, Engine) -> Unit,
-) : ListAdapter<Engine, EnginesAdapter.ViewHolder>(Diff()) {
+    private val soundAction: (Int, EngineUi) -> Unit,
+) : ListAdapter<EngineUi, EnginesAdapter.ViewHolder>(Diff()) {
 
     inner class ViewHolder(private val view: ItemEngineBinding) :
         RecyclerView.ViewHolder(view.root) {
@@ -64,7 +64,7 @@ class EnginesAdapter(
             view.viewPager.adapter = adapter
         }
 
-        fun bind(item: Engine) {
+        fun bind(item: EngineUi) {
             adapter.submitList(item.images)
             view.tvName.text = item.name
             bindLikes(item, true)
@@ -73,11 +73,11 @@ class EnginesAdapter(
             bindSoundAction(item)
         }
 
-        fun bindCountLike(item: Engine) {
+        fun bindCountLike(item: EngineUi) {
             view.tvLike.text = item.countLike.toString()
         }
 
-        fun bindLikes(item: Engine, state: Boolean = false) {
+        fun bindLikes(item: EngineUi, state: Boolean = false) {
             bindCountLike(item)
             if (state) {
                 view.imgLike.drawable.setTint(if (item.likeIt) Color.RED else Color.parseColor("#F6F2F2"))
@@ -97,7 +97,7 @@ class EnginesAdapter(
             }
         }
 
-        fun bindDescription(item: Engine) {
+        fun bindDescription(item: EngineUi) {
             val newMaxLines = if (item.expanded) MAX_LINES
             else MIN_LINES
             ObjectAnimator.ofInt(view.tvDescription, "maxLines", newMaxLines).setDuration(250)
@@ -105,7 +105,7 @@ class EnginesAdapter(
             view.tvDescription.text = item.description
         }
 
-        fun bindSoundAction(item: Engine) {
+        fun bindSoundAction(item: EngineUi) {
             view.soundAction.setImageResource(if (item.soundPlaying) R.drawable.pause else R.drawable.play)
         }
     }
@@ -138,14 +138,14 @@ class EnginesAdapter(
     }
 }
 
-class Diff : DiffUtil.ItemCallback<Engine>() {
-    override fun areItemsTheSame(oldItem: Engine, newItem: Engine): Boolean =
+class Diff : DiffUtil.ItemCallback<EngineUi>() {
+    override fun areItemsTheSame(oldItem: EngineUi, newItem: EngineUi): Boolean =
         oldItem.id == newItem.id
 
-    override fun areContentsTheSame(oldItem: Engine, newItem: Engine): Boolean =
+    override fun areContentsTheSame(oldItem: EngineUi, newItem: EngineUi): Boolean =
         oldItem == newItem
 
-    override fun getChangePayload(oldItem: Engine, newItem: Engine): Any? {
+    override fun getChangePayload(oldItem: EngineUi, newItem: EngineUi): Any? {
         return if (oldItem.likeIt != newItem.likeIt)
             bundleOf().apply {
                 putString(ACTION, ACTION_LIKE)

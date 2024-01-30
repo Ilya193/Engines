@@ -15,16 +15,16 @@ class MainViewModel(
 
     private var uuid = ""
 
-    private var engines = mutableListOf<Engine>()
-    private val _uiState = MutableLiveData<List<Engine>>()
-    val uiState: LiveData<List<Engine>> get() = _uiState
+    private var engines = mutableListOf<EngineUi>()
+    private val _uiState = MutableLiveData<List<EngineUi>>()
+    val uiState: LiveData<List<EngineUi>> get() = _uiState
 
     fun fetchEngines() = viewModelScope.launch(Dispatchers.IO) {
         firestore.collection("items")
             .addSnapshotListener { snapshot, e ->
-                val list = mutableListOf<Engine>()
+                val list = mutableListOf<EngineUi>()
                 for (i in snapshot!!.documents) {
-                    var item = i.toObject(Engine::class.java)!!
+                    var item = i.toObject(EngineUi::class.java)!!
                     var likeIt = false
                     for (uuidLike in item.liked) {
                         if (uuid == uuidLike) {
