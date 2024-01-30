@@ -21,8 +21,8 @@ class CommentsViewModel(
     private var uuid = ""
 
     private val comments = mutableListOf<CommentUi>()
-    private val _uiState = MutableLiveData<List<CommentUi>>()
-    val uiState: LiveData<List<CommentUi>> get() = _uiState
+    private val _uiState = MutableLiveData<CommentsUiState>()
+    val uiState: LiveData<CommentsUiState> get() = _uiState
 
     private val sdf = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
 
@@ -48,7 +48,8 @@ class CommentsViewModel(
                         if (message.senderId == uuid) comments.add(message.map(formattedDate, true))
                         else comments.add(message.map(formattedDate, false))
                     }
-                    _uiState.postValue(comments.toList())
+                    if (comments.isEmpty()) _uiState.postValue(CommentsUiState.NotFound)
+                    else _uiState.postValue(CommentsUiState.Success(comments.toList()))
                 }
 
                 override fun onCancelled(error: DatabaseError) {}

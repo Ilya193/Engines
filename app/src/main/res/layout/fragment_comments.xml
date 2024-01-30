@@ -17,6 +17,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/sendContainer"/>
 
+    <TextView
+        android:id="@+id/tvNoCommentsFound"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:visibility="gone"
+        android:text="@string/no_comments_found"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/sendContainer"/>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/sendContainer"
         android:layout_width="match_parent"

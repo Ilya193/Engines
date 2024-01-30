@@ -17,3 +17,8 @@ data class CommentUi(
         messageRead
     )
 }
+
+sealed interface CommentsUiState {
+    data class Success(val list: List<CommentUi>) : CommentsUiState
+    data object NotFound : CommentsUiState
+}
