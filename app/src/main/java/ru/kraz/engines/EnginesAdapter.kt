@@ -25,7 +25,7 @@ class EnginesAdapter(
     inner class ViewHolder(private val view: ItemEngineBinding) :
         RecyclerView.ViewHolder(view.root) {
 
-        private val adapter = ImageAdapter(imageLoader = imageLoader)
+        private val adapter = ImagesAdapter(imageLoader = imageLoader)
 
         private val animatorSet = AnimatorSet()
 

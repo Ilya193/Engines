@@ -8,10 +8,10 @@ import coil.ImageLoader
 import coil.load
 import ru.kraz.engines.databinding.ItemImageBinding
 
-class ImageAdapter(
+class ImagesAdapter(
     private var images: List<String> = mutableListOf(),
     private val imageLoader: ImageLoader,
-) : RecyclerView.Adapter<ImageAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<ImagesAdapter.ViewHolder>() {
     inner class ViewHolder(private val view: ItemImageBinding) :
         RecyclerView.ViewHolder(view.root) {
         fun bind(item: String) {

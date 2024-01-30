@@ -6,4 +6,14 @@
     <string name="text_retry">Произошла ошибка. Попробуй снова</string>
     <string name="btn_text_retry">Попробовать снова</string>
     <string name="not_posts_found">Посты не найдены</string>
+    <string name="input_type_engine">Введи тип двигателя</string>
+    <string name="input_information_engine">Введи информацию о двигателе</string>
+    <string name="select_sound">Выбрать звук из памяти устройства</string>
+    <string name="cancel">Отмена</string>
+    <string name="select_image">Выбрать фото из памяти устройства</string>
+    <string name="text_information">Здесь будут выбранные изображения \n Максимум два изображения</string>
+    <string name="take_photo">Сделать фото</string>
+    <string name="create_post">Создать пост</string>
+    <string name="information_max_image">Можно выбрать два изображения</string>
+    <string name="all_fiels_must_be_filled">Необходимо заполнить все поля</string>
 </resources>

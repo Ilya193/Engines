@@ -5,4 +5,5 @@
     <color name="backgroundEngine">#1A1B1B</color>
     <color name="colorPrimary">#262729</color>
     <color name="windowBackground">#FF000000</color>
+    <color name="hint">#0055FF</color>
 </resources>
