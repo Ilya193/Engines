@@ -16,34 +16,46 @@ class MainViewModel(
     private var uuid = ""
 
     private var engines = mutableListOf<EngineUi>()
-    private val _uiState = MutableLiveData<List<EngineUi>>()
-    val uiState: LiveData<List<EngineUi>> get() = _uiState
+    private val _uiState = MutableLiveData<EnginesUiState>()
+    val uiState: LiveData<EnginesUiState> get() = _uiState
 
     fun fetchEngines() = viewModelScope.launch(Dispatchers.IO) {
-        firestore.collection("items")
-            .addSnapshotListener { snapshot, e ->
-                val list = mutableListOf<EngineUi>()
-                for (i in snapshot!!.documents) {
-                    var item = i.toObject(EngineUi::class.java)!!
-                    var likeIt = false
-                    for (uuidLike in item.liked) {
-                        if (uuid == uuidLike) {
-                            likeIt = true
-                            break
+        _uiState.postValue(EnginesUiState.Loading)
+        try {
+            firestore.collection("items")
+                .addSnapshotListener { snapshot, e ->
+                    if (e != null) _uiState.postValue(EnginesUiState.Error)
+                    else {
+                        val list = mutableListOf<EngineUi>()
+                        for (i in snapshot!!.documents) {
+                            var item = i.toObject(EngineUi::class.java)!!
+                            var likeIt = false
+                            for (uuidLike in item.liked) {
+                                if (uuid == uuidLike) {
+                                    likeIt = true
+                                    break
+                                }
+                            }
+                            if (likeIt) item = item.copy(likeIt = true)
+                            list.add(item)
                         }
+                        val temp =
+                            if (engines.isNotEmpty()) engines.toMutableList() else mutableListOf()
+                        engines = list
+                        temp.forEachIndexed { index, tempEngine ->
+                            if (tempEngine.expanded) engines[index] =
+                                engines[index].copy(expanded = true)
+                            if (tempEngine.soundPlaying) engines[index] =
+                                engines[index].copy(soundPlaying = true)
+                        }
+                        if (engines.isEmpty()) _uiState.postValue(EnginesUiState.NotFound)
+                        else _uiState.postValue(EnginesUiState.Success(engines.toList()))
                     }
-                    if (likeIt) item = item.copy(likeIt = true)
-                    list.add(item)
                 }
-                val temp = if (engines.isNotEmpty()) engines.toMutableList() else mutableListOf()
-                engines = list
-                temp.forEachIndexed { index, tempEngine ->
-                    if (tempEngine.expanded) engines[index] = engines[index].copy(expanded = true)
-                    if (tempEngine.soundPlaying) engines[index] =
-                        engines[index].copy(soundPlaying = true)
-                }
-                _uiState.postValue(engines.toList())
-            }
+        } catch (e: Exception) {
+            _uiState.postValue(EnginesUiState.Error)
+        }
+
     }
 
     fun like(position: Int) = viewModelScope.launch(Dispatchers.IO) {
@@ -63,7 +75,7 @@ class MainViewModel(
 
     fun expand(position: Int) {
         engines[position] = engines[position].copy(expanded = !engines[position].expanded)
-        _uiState.postValue(engines.toList())
+        _uiState.postValue(EnginesUiState.Success(engines.toList()))
     }
 
     fun sound(position: Int) {
@@ -72,14 +84,14 @@ class MainViewModel(
                 engines[index].copy(soundPlaying = !engines[index].soundPlaying)
             else engines[index] = engines[index].copy(soundPlaying = false)
         }
-        _uiState.postValue(engines.toList())
+        _uiState.postValue(EnginesUiState.Success(engines.toList()))
     }
 
     fun sound() {
         for (index in 0..<engines.size) {
             engines[index] = engines[index].copy(soundPlaying = false)
         }
-        _uiState.postValue(engines.toList())
+        _uiState.postValue(EnginesUiState.Success(engines.toList()))
     }
 
     fun uuid(uuid: String) {

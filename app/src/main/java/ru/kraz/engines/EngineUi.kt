@@ -12,3 +12,10 @@ data class EngineUi(
     val expanded: Boolean = false,
     val soundPlaying: Boolean = false,
 )
+
+sealed interface EnginesUiState {
+    data class Success(val list: List<EngineUi>) : EnginesUiState
+    data object NotFound : EnginesUiState
+    data object Loading : EnginesUiState
+    data object Error : EnginesUiState
+}

@@ -22,4 +22,6 @@ sealed interface CommentsUiState {
     data class Success(val list: List<CommentUi>) : CommentsUiState
     data object NotFound : CommentsUiState
     data object Loading : CommentsUiState
+
+    data object Error: CommentsUiState
 }

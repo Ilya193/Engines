@@ -39,23 +39,29 @@ class CommentsViewModel(
 
     fun fetchComments(engineId: String) = viewModelScope.launch(Dispatchers.IO) {
         _uiState.postValue(CommentsUiState.Loading)
-        database.reference.child("comments/$engineId").orderByChild("timestamp")
-            .addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    comments.clear()
-                    for (i in snapshot.children) {
-                        val message = i.getValue(CommentCloud::class.java)
-                        val date = Date(message!!.createdDate["timestamp"] as Long)
-                        val formattedDate = sdf.format(date)
-                        if (message.senderId == uuid) comments.add(message.map(formattedDate, true))
-                        else comments.add(message.map(formattedDate, false))
+        try {
+            database.reference.child("comments/$engineId").orderByChild("timestamp")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        comments.clear()
+                        for (i in snapshot.children) {
+                            val message = i.getValue(CommentCloud::class.java)
+                            val date = Date(message!!.createdDate["timestamp"] as Long)
+                            val formattedDate = sdf.format(date)
+                            if (message.senderId == uuid) comments.add(message.map(formattedDate, true))
+                            else comments.add(message.map(formattedDate, false))
+                        }
+                        if (comments.isEmpty()) _uiState.postValue(CommentsUiState.NotFound)
+                        else _uiState.postValue(CommentsUiState.Success(comments.toList()))
                     }
-                    if (comments.isEmpty()) _uiState.postValue(CommentsUiState.NotFound)
-                    else _uiState.postValue(CommentsUiState.Success(comments.toList()))
-                }
 
-                override fun onCancelled(error: DatabaseError) {}
-            })
+                    override fun onCancelled(error: DatabaseError) {
+                        _uiState.postValue(CommentsUiState.Error)
+                    }
+                })
+        } catch (e: Exception) {
+            _uiState.postValue(CommentsUiState.Error)
+        }
     }
 
     fun uuid(uuid: String) {

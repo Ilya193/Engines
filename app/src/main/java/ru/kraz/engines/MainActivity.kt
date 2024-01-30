@@ -9,6 +9,7 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import coil.ImageLoader
@@ -70,8 +71,18 @@ class MainActivity : AppCompatActivity(), EnginesAdapterListener {
         binding.engines.adapter = adapter
         binding.engines.setHasFixedSize(true)
 
+        binding.informationContainer.btnRetry.setOnClickListener {
+            viewModel.fetchEngines()
+        }
+
         viewModel.uiState.observe(this) {
-            adapter.submitList(it)
+            binding.informationContainer.loading.visibility = if (it is EnginesUiState.Loading) View.VISIBLE else View.GONE
+            binding.informationContainer.containerError.visibility = if (it is EnginesUiState.Error) View.VISIBLE else View.GONE
+            binding.tvNoPostsFound.visibility = if (it is EnginesUiState.NotFound) View.VISIBLE else View.GONE
+            binding.engines.visibility = if (it is EnginesUiState.Success) View.VISIBLE else View.GONE
+            if (it is EnginesUiState.Success) {
+                adapter.submitList(it.list)
+            }
         }
     }
 
