@@ -18,7 +18,7 @@ import ru.kraz.engines.databinding.ActivityMainBinding
 import java.util.UUID
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), EnginesAdapterListener {
     private val binding: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
@@ -65,31 +65,7 @@ class MainActivity : AppCompatActivity() {
             }
             .build()
 
-        val adapter = EnginesAdapter(imageLoader, like = { position ->
-            viewModel.like(position)
-        }, expand = { position ->
-            viewModel.expand(position)
-        }, chat = { id ->
-            CommentsFragment.newInstance(id).show(supportFragmentManager, null)
-        }, soundAction = { position, engine ->
-            viewModel.sound(position)
-            if (engine.soundPlaying) {
-                stopSound()
-            } else {
-                if (musicPlayer != null)
-                    stopSound()
-                musicPlayer = MediaPlayer()
-                musicPlayer?.setDataSource(engine.sound)
-                musicPlayer?.prepareAsync()
-                musicPlayer?.setOnPreparedListener {
-                    musicPlayer?.start()
-                }
-                musicPlayer?.setOnCompletionListener {
-                    stopSound()
-                    viewModel.sound()
-                }
-            }
-        })
+        val adapter = EnginesAdapter(imageLoader, this)
 
         binding.engines.adapter = adapter
         binding.engines.setHasFixedSize(true)
@@ -127,5 +103,37 @@ class MainActivity : AppCompatActivity() {
         super.onStop()
         connectivityManager.unregisterNetworkCallback(networkCallback)
         internetConnection = false
+    }
+
+    override fun onLikeClicked(position: Int) {
+        viewModel.like(position)
+    }
+
+    override fun onExpandClicked(position: Int) {
+        viewModel.expand(position)
+    }
+
+    override fun openComments(id: String) {
+        CommentsFragment.newInstance(id).show(supportFragmentManager, null)
+    }
+
+    override fun onSoundAction(position: Int, engine: EngineUi) {
+        viewModel.sound(position)
+        if (engine.soundPlaying) {
+            stopSound()
+        } else {
+            if (musicPlayer != null)
+                stopSound()
+            musicPlayer = MediaPlayer()
+            musicPlayer?.setDataSource(engine.sound)
+            musicPlayer?.prepareAsync()
+            musicPlayer?.setOnPreparedListener {
+                musicPlayer?.start()
+            }
+            musicPlayer?.setOnCompletionListener {
+                stopSound()
+                viewModel.sound()
+            }
+        }
     }
 }

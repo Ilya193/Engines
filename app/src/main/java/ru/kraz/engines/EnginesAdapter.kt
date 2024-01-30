@@ -19,11 +19,8 @@ import ru.kraz.engines.databinding.ItemEngineBinding
 
 class EnginesAdapter(
     private val imageLoader: ImageLoader,
-    private val like: (Int) -> Unit,
-    private val expand: (Int) -> Unit,
-    private val chat: (String) -> Unit,
-    private val soundAction: (Int, EngineUi) -> Unit,
-) : ListAdapter<EngineUi, EnginesAdapter.ViewHolder>(Diff()) {
+    private val listener: EnginesAdapterListener
+) : ListAdapter<EngineUi, EnginesAdapter.ViewHolder>(DiffEngines()) {
 
     inner class ViewHolder(private val view: ItemEngineBinding) :
         RecyclerView.ViewHolder(view.root) {
@@ -47,19 +44,19 @@ class EnginesAdapter(
         init {
             view.imgLike.setOnClickListener {
                 if (bindingAdapterPosition != RecyclerView.NO_POSITION)
-                    like(bindingAdapterPosition)
+                    listener.onLikeClicked(bindingAdapterPosition)
             }
             view.tvDescription.setOnClickListener {
                 if (bindingAdapterPosition != RecyclerView.NO_POSITION)
-                    expand(bindingAdapterPosition)
+                    listener.onExpandClicked(bindingAdapterPosition)
             }
             view.imgChat.setOnClickListener {
                 if (bindingAdapterPosition != RecyclerView.NO_POSITION)
-                    chat(getItem(bindingAdapterPosition).id)
+                    listener.openComments(getItem(bindingAdapterPosition).id)
             }
             view.soundAction.setOnClickListener {
                 if (bindingAdapterPosition != RecyclerView.NO_POSITION)
-                    soundAction(bindingAdapterPosition, getItem(bindingAdapterPosition))
+                    listener.onSoundAction(bindingAdapterPosition, getItem(bindingAdapterPosition))
             }
             view.viewPager.adapter = adapter
         }
@@ -123,11 +120,11 @@ class EnginesAdapter(
         if (payloads.isEmpty()) super.onBindViewHolder(holder, position, payloads)
         else {
             val bundle = payloads[0] as Bundle
-            when (bundle.getString(Diff.ACTION) ?: "") {
-                Diff.ACTION_LIKE -> holder.bindLikes(getItem(position))
-                Diff.ACTION_COUNT_LIKE -> holder.bindCountLike(getItem(position))
-                Diff.ACTION_SOUND -> holder.bindSoundAction(getItem(position))
-                Diff.ACTION_TEXT_EXPANDED -> holder.bindDescription(getItem(position))
+            when (bundle.getString(DiffEngines.ACTION) ?: "") {
+                DiffEngines.ACTION_LIKE -> holder.bindLikes(getItem(position))
+                DiffEngines.ACTION_COUNT_LIKE -> holder.bindCountLike(getItem(position))
+                DiffEngines.ACTION_SOUND -> holder.bindSoundAction(getItem(position))
+                DiffEngines.ACTION_TEXT_EXPANDED -> holder.bindDescription(getItem(position))
             }
         }
     }
@@ -138,7 +135,7 @@ class EnginesAdapter(
     }
 }
 
-class Diff : DiffUtil.ItemCallback<EngineUi>() {
+class DiffEngines : DiffUtil.ItemCallback<EngineUi>() {
     override fun areItemsTheSame(oldItem: EngineUi, newItem: EngineUi): Boolean =
         oldItem.id == newItem.id
 
