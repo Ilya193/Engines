@@ -15,6 +15,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
@@ -40,7 +41,7 @@ class UploadWorker(private val context: Context, params: WorkerParameters) : Cor
         return NotificationCompat.Builder(context, CHANNEL_ID)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setContentTitle("Идет загрузка данных на сервер")
-            .setSmallIcon(R.drawable.ic_launcher_background)
+            .setSmallIcon(R.drawable.construction_black)
             .build()
     }
 
@@ -54,35 +55,26 @@ class UploadWorker(private val context: Context, params: WorkerParameters) : Cor
         val uriImages = inputData.getStringArray(KEY_IMAGES_URI)?.toList()
 
         var downloadUrlSound = ""
-        var downloadUrlImages = listOf<String>()
+        val downloadUrlImages = mutableListOf<String>()
 
         if (type != null && description != null && uriSound != null && uriImages != null) {
             setForeground(getForegroundInfo())
             withContext(Dispatchers.IO) {
-                val tempSound = async {
+                launch {
                     val ref = storage.reference.child("upload/${Uri.parse(uriSound).lastPathSegment}")
                     ref.putFile(Uri.parse(uriSound)).await()
-                    val uri = ref.downloadUrl.await()
-                    uri
-                }
+                    downloadUrlSound = ref.downloadUrl.await().toString()
+                }.join()
 
-                val tempImages = async {
-                    val uris = mutableListOf<Uri>()
+                launch {
                     for (i in uriImages.indices) {
                         val ref =
                             storage.reference.child("upload/$${Uri.parse(uriImages[i]).lastPathSegment}")
                         ref.putFile(Uri.parse(uriImages[i])).await()
                         val uri = ref.downloadUrl.await()
-                        uris.add(uri)
+                        downloadUrlImages.add(uri.toString())
                     }
-                    uris
-                }
-
-                downloadUrlSound = tempSound.await().toString()
-
-                downloadUrlImages = tempImages.await().map {
-                    it.toString()
-                }
+                }.join()
 
                 val document = firestore.collection("items").document()
                 document.set(
