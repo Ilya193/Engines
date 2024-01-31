@@ -2,17 +2,14 @@ package ru.kraz.engines
 
 import android.content.Context
 import android.media.MediaPlayer
-import android.net.ConnectivityManager
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import coil.ImageLoader
 import coil.decode.GifDecoder
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import ru.kraz.engines.databinding.FragmentCreateEngineBinding
 import ru.kraz.engines.databinding.FragmentEnginesBinding
 import java.util.UUID
 

@@ -2,13 +2,13 @@ package ru.kraz.engines
 
 import android.app.Activity
 import android.content.Intent
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
@@ -17,7 +17,6 @@ import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.kraz.engines.databinding.FragmentCreateEngineBinding
 import java.io.File
-import java.io.FileOutputStream
 import java.util.UUID
 
 class CreateEngineFragment : Fragment() {
@@ -49,6 +48,7 @@ class CreateEngineFragment : Fragment() {
                     val displayName = it.getString(data)
                     binding.tvNameSound.text = displayName
                     binding.deleteSound.visibility = View.VISIBLE
+                    binding.btnActionSound.visibility = View.VISIBLE
                 }
                 this.uriSound = uri
             }
@@ -75,6 +75,8 @@ class CreateEngineFragment : Fragment() {
 
     private var uriImage: Uri? = null
 
+    private var mediaPlayer: MediaPlayer? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -93,7 +95,25 @@ class CreateEngineFragment : Fragment() {
         binding.deleteSound.setOnClickListener {
             binding.tvNameSound.text = ""
             binding.deleteSound.visibility = View.GONE
+            binding.btnActionSound.visibility = View.GONE
             uriSound = null
+            stopSound()
+        }
+
+        binding.btnActionSound.setOnClickListener {
+            if (mediaPlayer == null) {
+                binding.btnActionSound.setImageResource(R.drawable.pause)
+                mediaPlayer = MediaPlayer()
+                mediaPlayer?.setDataSource(requireContext(), uriSound ?: Uri.parse(""))
+                mediaPlayer?.prepare()
+                mediaPlayer?.start()
+                mediaPlayer?.setOnCompletionListener {
+                    stopSound()
+                }
+            }
+            else {
+                stopSound()
+            }
         }
 
         binding.btnSelectImage.setOnClickListener {
@@ -141,6 +161,17 @@ class CreateEngineFragment : Fragment() {
             binding.containerError.visibility = if (it is CreatePostState.Error) View.VISIBLE else View.GONE
             if (it is CreatePostState.Success) parentFragmentManager.popBackStack()
         }
+    }
+
+    private fun stopSound() {
+        mediaPlayer?.release()
+        mediaPlayer = null
+        binding.btnActionSound.setImageResource(R.drawable.play)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        stopSound()
     }
 
     override fun onDestroyView() {
