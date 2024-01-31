@@ -118,16 +118,13 @@ class CreateEngineFragment : Fragment() {
         }
 
         binding.btnSelectImage.setOnClickListener {
-            if (selectedImages.size <= 1)
+            checkForMaximumLoadedImages {
                 pickImage.launch("image/*")
-            else Snackbar.make(
-                binding.root,
-                getString(R.string.information_max_image), Snackbar.LENGTH_SHORT
-            ).show()
+            }
         }
 
         binding.btnMakeImage.setOnClickListener {
-            if (selectedImages.size <= 1) {
+            checkForMaximumLoadedImages {
                 val tempFile = File(requireContext().cacheDir, "${UUID.randomUUID()}.jpg")
                 uriImage = FileProvider.getUriForFile(
                     requireContext(),
@@ -137,10 +134,7 @@ class CreateEngineFragment : Fragment() {
                 val makeImageIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 makeImageIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriImage)
                 makeImage.launch(makeImageIntent)
-            } else Snackbar.make(
-                binding.root,
-                getString(R.string.information_max_image), Snackbar.LENGTH_SHORT
-            ).show()
+            }
         }
 
         binding.btnCreatePost.setOnClickListener {
@@ -164,12 +158,18 @@ class CreateEngineFragment : Fragment() {
         binding.viewPager.adapter = adapter
 
         viewModel.uiState.observe(viewLifecycleOwner) {
-            binding.loading.visibility =
-                if (it is CreatePostState.Loading) View.VISIBLE else View.GONE
-            binding.containerError.visibility =
-                if (it is CreatePostState.Error) View.VISIBLE else View.GONE
+            binding.loading.visibility = if (it is CreatePostState.Loading) View.VISIBLE else View.GONE
+            binding.containerError.visibility = if (it is CreatePostState.Error) View.VISIBLE else View.GONE
             if (it is CreatePostState.Success) parentFragmentManager.popBackStack()
         }
+    }
+
+    private fun checkForMaximumLoadedImages(block: () -> Unit) {
+        if (selectedImages.size <= 1) block()
+        else Snackbar.make(
+            binding.root,
+            getString(R.string.information_max_image), Snackbar.LENGTH_SHORT
+        ).show()
     }
 
     private fun stopSound() {
