@@ -13,10 +13,14 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.kraz.engines.databinding.FragmentCreateEngineBinding
 import java.io.File
+import java.util.ArrayList
 import java.util.UUID
 
 class CreateEngineFragment : Fragment() {
@@ -142,8 +146,19 @@ class CreateEngineFragment : Fragment() {
             val description = binding.inputInformation.text.toString()
 
             if (type.isNotEmpty() && description.isNotEmpty() && uriSound != null && selectedImages.isNotEmpty()) {
-                viewModel.createPost(type, description, uriSound!!, selectedImages)
-                binding.content.visibility = View.GONE
+                //viewModel.createPost(type, description, uriSound!!, selectedImages)
+                //binding.content.visibility = View.GONE
+                val inputData = Data.Builder()
+                    .putString(UploadWorker.KEY_TYPE, type)
+                    .putString(UploadWorker.KEY_DESCRIPTION, description)
+                    .putString(UploadWorker.KEY_SOUND_URI, uriSound.toString())
+                    .putStringArray(UploadWorker.KEY_IMAGES_URI, selectedImages.map { it.uri.toString() }.toTypedArray())
+                    .build()
+                val uploadWorker = OneTimeWorkRequestBuilder<UploadWorker>()
+                    .setInputData(inputData)
+                    .build()
+                WorkManager.getInstance(requireContext()).enqueue(uploadWorker)
+                parentFragmentManager.popBackStack()
             } else Snackbar.make(
                 binding.root,
                 getString(R.string.all_fiels_must_be_filled), Snackbar.LENGTH_SHORT
@@ -166,10 +181,7 @@ class CreateEngineFragment : Fragment() {
 
     private fun checkForMaximumLoadedImages(block: () -> Unit) {
         if (selectedImages.size <= 1) block()
-        else Snackbar.make(
-            binding.root,
-            getString(R.string.information_max_image), Snackbar.LENGTH_SHORT
-        ).show()
+        else Snackbar.make(binding.root, getString(R.string.information_max_image), Snackbar.LENGTH_SHORT).show()
     }
 
     private fun stopSound() {

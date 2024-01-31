@@ -62,4 +62,6 @@ dependencies {
     implementation ("androidx.fragment:fragment-ktx:1.6.2")
 
     implementation("androidx.recyclerview:recyclerview:1.3.2")
+
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 }
