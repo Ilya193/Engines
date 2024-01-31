@@ -79,7 +79,7 @@ class CreateEngineFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         _binding = FragmentCreateEngineBinding.inflate(inflater, container, false)
         return binding.root
@@ -104,14 +104,15 @@ class CreateEngineFragment : Fragment() {
             if (mediaPlayer == null) {
                 binding.btnActionSound.setImageResource(R.drawable.pause)
                 mediaPlayer = MediaPlayer()
-                mediaPlayer?.setDataSource(requireContext(), uriSound ?: Uri.parse(""))
-                mediaPlayer?.prepare()
-                mediaPlayer?.start()
-                mediaPlayer?.setOnCompletionListener {
-                    stopSound()
+                if (uriSound != null) {
+                    mediaPlayer?.setDataSource(requireContext(), uriSound!!)
+                    mediaPlayer?.prepare()
+                    mediaPlayer?.start()
+                    mediaPlayer?.setOnCompletionListener {
+                        stopSound()
+                    }
                 }
-            }
-            else {
+            } else {
                 stopSound()
             }
         }
@@ -119,8 +120,10 @@ class CreateEngineFragment : Fragment() {
         binding.btnSelectImage.setOnClickListener {
             if (selectedImages.size <= 1)
                 pickImage.launch("image/*")
-            else Snackbar.make(binding.root,
-            getString(R.string.information_max_image), Snackbar.LENGTH_SHORT).show()
+            else Snackbar.make(
+                binding.root,
+                getString(R.string.information_max_image), Snackbar.LENGTH_SHORT
+            ).show()
         }
 
         binding.btnMakeImage.setOnClickListener {
@@ -134,8 +137,10 @@ class CreateEngineFragment : Fragment() {
                 val makeImageIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 makeImageIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriImage)
                 makeImage.launch(makeImageIntent)
-            } else Snackbar.make(binding.root,
-                getString(R.string.information_max_image), Snackbar.LENGTH_SHORT).show()
+            } else Snackbar.make(
+                binding.root,
+                getString(R.string.information_max_image), Snackbar.LENGTH_SHORT
+            ).show()
         }
 
         binding.btnCreatePost.setOnClickListener {
@@ -145,8 +150,10 @@ class CreateEngineFragment : Fragment() {
             if (type.isNotEmpty() && description.isNotEmpty() && uriSound != null && selectedImages.isNotEmpty()) {
                 viewModel.createPost(type, description, uriSound!!, selectedImages)
                 binding.content.visibility = View.GONE
-            } else Snackbar.make(binding.root,
-                getString(R.string.all_fiels_must_be_filled), Snackbar.LENGTH_SHORT).show()
+            } else Snackbar.make(
+                binding.root,
+                getString(R.string.all_fiels_must_be_filled), Snackbar.LENGTH_SHORT
+            ).show()
         }
 
         binding.btnRetry.setOnClickListener {
@@ -157,8 +164,10 @@ class CreateEngineFragment : Fragment() {
         binding.viewPager.adapter = adapter
 
         viewModel.uiState.observe(viewLifecycleOwner) {
-            binding.loading.visibility = if (it is CreatePostState.Loading) View.VISIBLE else View.GONE
-            binding.containerError.visibility = if (it is CreatePostState.Error) View.VISIBLE else View.GONE
+            binding.loading.visibility =
+                if (it is CreatePostState.Loading) View.VISIBLE else View.GONE
+            binding.containerError.visibility =
+                if (it is CreatePostState.Error) View.VISIBLE else View.GONE
             if (it is CreatePostState.Success) parentFragmentManager.popBackStack()
         }
     }
