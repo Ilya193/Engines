@@ -1,3 +1,6 @@
+Приложение для создания постов об информации о двигателях c возможностью оставлять комментарии и прослушивать музыкальное сопровождение
+Стек: firebase storage, firestore, database, coroutines, work manager, koin
+
 ![1](https://github.com/Ilya193/Engines/assets/40058340/bfb8959f-d0f2-4b07-9c1b-d10d1bf74bd5)
 ![2](https://github.com/Ilya193/Engines/assets/40058340/f1f1c0a7-4e69-4876-8379-e15957f14bd9)
 ![3](https://github.com/Ilya193/Engines/assets/40058340/0e2e336e-d6af-4596-95ab-0c48b74bd98f)
